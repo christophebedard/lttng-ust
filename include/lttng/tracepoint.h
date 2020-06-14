@@ -80,6 +80,15 @@ extern "C" {
 #define _TP_COMBINE_TOKENS4(_tokena, _tokenb, _tokenc, _tokend)		\
 		__TP_COMBINE_TOKENS4(_tokena, _tokenb, _tokenc, _tokend)
 
+#define __STRINGIFY_TOKENS3(_tokena, _tokenb, _tokenc)	\
+		#_tokena#_tokenb#_tokenc
+#define _STRINGIFY_TOKENS3(_tokena, _tokenb, _tokenc)		\
+		__STRINGIFY_TOKENS3(_tokena, _tokenb, _tokenc)
+#define __STRINGIFY_TOKENS4(_tokena, _tokenb, _tokenc, _tokend)	\
+		#_tokena#_tokenb#_tokenc#_tokend
+#define _STRINGIFY_TOKENS4(_tokena, _tokenb, _tokenc, _tokend)		\
+		__STRINGIFY_TOKENS4(_tokena, _tokenb, _tokenc, _tokend)
+
 /*
  * _TP_EXVAR* extract the var names.
  * _TP_EXVAR1 and _TP_EXDATA_VAR1 are needed for -std=c99.

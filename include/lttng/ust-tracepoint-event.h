@@ -88,11 +88,11 @@ void _TP_COMBINE_TOKENS(__tracepoint_provider_mismatch_, TRACEPOINT_PROVIDER)(vo
 
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields) 	\
-	__tracepoint_provider_mismatch_##_provider();
+	_TP_COMBINE_TOKENS(__tracepoint_provider_mismatch_, _provider)();
 
 #undef TRACEPOINT_EVENT_INSTANCE
 #define TRACEPOINT_EVENT_INSTANCE(_provider, _template, _name, _args)	\
-	__tracepoint_provider_mismatch_##_provider();
+	_TP_COMBINE_TOKENS(__tracepoint_provider_mismatch_, _provider)();
 
 static inline lttng_ust_notrace
 void _TP_COMBINE_TOKENS(__tracepoint_provider_check_, TRACEPOINT_PROVIDER)(void);
@@ -115,9 +115,9 @@ void _TP_COMBINE_TOKENS(__tracepoint_provider_check_, TRACEPOINT_PROVIDER)(void)
 #undef TRACEPOINT_EVENT_INSTANCE
 #define TRACEPOINT_EVENT_INSTANCE(_provider, _template, _name, _args)	\
 static const char							\
-	__tp_name_len_check##_provider##___##_name[LTTNG_UST_SYM_NAME_LEN] \
+	_TP_COMBINE_TOKENS4(__tp_name_len_check, _provider, ___, _name)[LTTNG_UST_SYM_NAME_LEN] \
 	__attribute__((unused)) =					\
-		#_provider ":" #_name;
+		_STRINGIFY_TOKENS3(_provider, :, _name);
 
 #include TRACEPOINT_INCLUDE
 
@@ -137,11 +137,11 @@ static const char							\
 
 #undef TRACEPOINT_EVENT_INSTANCE
 #define TRACEPOINT_EVENT_INSTANCE(_provider, _template, _name, _args) \
-void __event_template_proto___##_provider##___##_template(_TP_ARGS_DATA_PROTO(_args));
+void _TP_COMBINE_TOKENS4(__event_template_proto___, _provider, ___, _template)(_TP_ARGS_DATA_PROTO(_args));
 
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields) \
-void __event_template_proto___##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args));
+void _TP_COMBINE_TOKENS4(__event_template_proto___, _provider, ___, _name)(_TP_ARGS_DATA_PROTO(_args));
 
 #include TRACEPOINT_INCLUDE
 
@@ -212,7 +212,7 @@ void __event_template_proto___##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args)
 
 #undef TRACEPOINT_ENUM
 #define TRACEPOINT_ENUM(_provider, _name, _values)			\
-	const struct lttng_enum_entry __enum_values__##_provider##_##_name[] = { \
+	const struct lttng_enum_entry _TP_COMBINE_TOKENS4(__enum_values__, _provider, _, _name)[] = { \
 		_values							\
 		ctf_enum_value("", 0)	/* Dummy, 0-len array forbidden by C99. */ \
 	};
@@ -381,7 +381,7 @@ void __event_template_proto___##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args)
 			.atype = atype_enum_nestable,		\
 			.u = {					\
 				.enum_nestable = {		\
-					.desc = &__enum_##_provider##_##_name, \
+					.desc = &_TP_COMBINE_TOKENS4(__enum_, _provider, _, _name), \
 					.container_type = __LTTNG_COMPOUND_LITERAL(struct lttng_type, \
 								__type_integer(_type, BYTE_ORDER, 10, none)), \
 				},				\
@@ -400,17 +400,17 @@ void __event_template_proto___##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args)
 
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)		   	     \
-	static const struct lttng_event_field __event_fields___##_provider##___##_name[] = { \
+	static const struct lttng_event_field _TP_COMBINE_TOKENS4(__event_fields___, _provider, ___, _name)[] = { \
 		_fields									     \
 		ctf_integer(int, dummy, 0)	/* Dummy, C99 forbids 0-len array. */	     \
 	};
 
 #undef TRACEPOINT_ENUM
 #define TRACEPOINT_ENUM(_provider, _name, _values)					\
-	static const struct lttng_enum_desc __enum_##_provider##_##_name = {		\
-		.name = #_provider "_" #_name,						\
-		.entries = __enum_values__##_provider##_##_name,			\
-		.nr_entries = _TP_ARRAY_SIZE(__enum_values__##_provider##_##_name) - 1,	\
+	static const struct lttng_enum_desc _TP_COMBINE_TOKENS4(__enum_, _provider, _, _name) = {		\
+		.name = _STRINGIFY_TOKENS3(_provider, _, _name),						\
+		.entries = _TP_COMBINE_TOKENS4(__enum_values__, _provider, _, _name),			\
+		.nr_entries = _TP_ARRAY_SIZE(_TP_COMBINE_TOKENS4(__enum_values__, _provider, _, _name)) - 1,	\
 	};
 
 #include TRACEPOINT_INCLUDE
@@ -429,7 +429,7 @@ void __event_template_proto___##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args)
 
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)		\
-static void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args));
+static void _TP_COMBINE_TOKENS4(__event_probe__, _provider, ___, _name)(_TP_ARGS_DATA_PROTO(_args));
 
 #include TRACEPOINT_INCLUDE
 
@@ -487,9 +487,9 @@ static void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args));
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)	      \
 static inline lttng_ust_notrace						      \
-size_t __event_get_size__##_provider##___##_name(size_t *__dynamic_len, _TP_ARGS_DATA_PROTO(_args)); \
+size_t _TP_COMBINE_TOKENS4(__event_get_size__, _provider, ___, _name)(size_t *__dynamic_len, _TP_ARGS_DATA_PROTO(_args)); \
 static inline								      \
-size_t __event_get_size__##_provider##___##_name(size_t *__dynamic_len, _TP_ARGS_DATA_PROTO(_args)) \
+size_t _TP_COMBINE_TOKENS4(__event_get_size__, _provider, ___, _name)(size_t *__dynamic_len, _TP_ARGS_DATA_PROTO(_args)) \
 {									      \
 	size_t __event_len = 0;						      \
 	unsigned int __dynamic_len_idx = 0;				      \
@@ -647,7 +647,7 @@ size_t __event_get_size__##_provider##___##_name(size_t *__dynamic_len, _TP_ARGS
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)	      \
 static inline								      \
-void __event_prepare_filter_stack__##_provider##___##_name(char *__stack_data,\
+void _TP_COMBINE_TOKENS4(__event_prepare_filter_stack__, _provider, ___, _name)(char *__stack_data,\
 						 _TP_ARGS_DATA_PROTO(_args))  \
 {									      \
 	_fields								      \
@@ -700,9 +700,9 @@ void __event_prepare_filter_stack__##_provider##___##_name(char *__stack_data,\
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)	      \
 static inline lttng_ust_notrace						      \
-size_t __event_get_align__##_provider##___##_name(_TP_ARGS_PROTO(_args));     \
+size_t _TP_COMBINE_TOKENS4(__event_get_align__, _provider, ___, _name)(_TP_ARGS_PROTO(_args));     \
 static inline								      \
-size_t __event_get_align__##_provider##___##_name(_TP_ARGS_PROTO(_args))      \
+size_t _TP_COMBINE_TOKENS4(__event_get_align__, _provider, ___, _name)(_TP_ARGS_PROTO(_args))      \
 {									      \
 	size_t __event_align = 1;					      \
 	_fields								      \
@@ -824,9 +824,9 @@ size_t __event_get_align__##_provider##___##_name(_TP_ARGS_PROTO(_args))      \
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)	      \
 static lttng_ust_notrace						      \
-void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args));      \
+void _TP_COMBINE_TOKENS4(__event_probe__, _provider, ___, _name)(_TP_ARGS_DATA_PROTO(_args));      \
 static									      \
-void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args))	      \
+void _TP_COMBINE_TOKENS4(__event_probe__, _provider, ___, _name)(_TP_ARGS_DATA_PROTO(_args))	      \
 {									      \
 	struct lttng_event *__event = (struct lttng_event *) __tp_data;	      \
 	struct lttng_channel *__chan = __event->chan;			      \
@@ -834,7 +834,7 @@ void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args))	      \
 	struct lttng_stack_ctx __lttng_ctx;				      \
 	size_t __event_len, __event_align;				      \
 	size_t __dynamic_len_idx = 0;					      \
-	const size_t __num_fields = _TP_ARRAY_SIZE(__event_fields___##_provider##___##_name) - 1; \
+	const size_t __num_fields = _TP_ARRAY_SIZE(_TP_COMBINE_TOKENS4(__event_fields___, _provider, ___, _name)) - 1; \
 	union {								      \
 		size_t __dynamic_len[__num_fields];			      \
 		char __filter_stack_data[2 * sizeof(unsigned long) * __num_fields]; \
@@ -857,7 +857,7 @@ void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args))	      \
 		struct lttng_bytecode_runtime *bc_runtime;		      \
 		int __filter_record = __event->has_enablers_without_bytecode; \
 									      \
-		__event_prepare_filter_stack__##_provider##___##_name(__stackvar.__filter_stack_data, \
+		_TP_COMBINE_TOKENS4(__event_prepare_filter_stack__, _provider, ___, _name)(__stackvar.__filter_stack_data, \
 			_TP_ARGS_DATA_VAR(_args));			      \
 		tp_list_for_each_entry_rcu(bc_runtime, &__event->bytecode_runtime_head, node) { \
 			if (caa_unlikely(bc_runtime->filter(bc_runtime,	      \
@@ -869,9 +869,9 @@ void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args))	      \
 		if (caa_likely(!__filter_record))			      \
 			return;						      \
 	}								      \
-	__event_len = __event_get_size__##_provider##___##_name(__stackvar.__dynamic_len, \
+	__event_len = _TP_COMBINE_TOKENS4(__event_get_size__, _provider, ___, _name)(__stackvar.__dynamic_len, \
 		 _TP_ARGS_DATA_VAR(_args));				      \
-	__event_align = __event_get_align__##_provider##___##_name(_TP_ARGS_VAR(_args)); \
+	__event_align = _TP_COMBINE_TOKENS4(__event_get_align__, _provider, ___, _name)(_TP_ARGS_VAR(_args)); \
 	memset(&__lttng_ctx, 0, sizeof(__lttng_ctx));			      \
 	__lttng_ctx.event = __event;					      \
 	__lttng_ctx.chan_ctx = tp_rcu_dereference_bp(__chan->ctx);	      \
@@ -906,7 +906,7 @@ void __event_probe__##_provider##___##_name(_TP_ARGS_DATA_PROTO(_args))	      \
 
 #undef TRACEPOINT_EVENT_CLASS
 #define TRACEPOINT_EVENT_CLASS(_provider, _name, _args, _fields)	\
-static const char __tp_event_signature___##_provider##___##_name[] = 	\
+static const char _TP_COMBINE_TOKENS4(__tp_event_signature___, _provider, ___, _name)[] = 	\
 		_TP_EXTRACT_STRING2(_args);
 
 #include TRACEPOINT_INCLUDE
@@ -939,10 +939,10 @@ static const char __tp_event_signature___##_provider##___##_name[] = 	\
 
 #undef TRACEPOINT_LOGLEVEL
 #define TRACEPOINT_LOGLEVEL(__provider, __name, __loglevel)		   \
-static const int _loglevel_value___##__provider##___##__name = __loglevel; \
-LTTNG_TP_EXTERN_C const int *_loglevel___##__provider##___##__name	   \
+static const int _TP_COMBINE_TOKENS4(_loglevel_value___, __provider, ___, __name) = __loglevel; \
+LTTNG_TP_EXTERN_C const int *_TP_COMBINE_TOKENS4(_loglevel___, __provider, ___, __name)	   \
 		__attribute__((visibility("hidden"))) =			   \
-		&_loglevel_value___##__provider##___##__name;
+		&_TP_COMBINE_TOKENS4(_loglevel_value___, __provider, ___, __name);
 
 #include TRACEPOINT_INCLUDE
 
@@ -971,7 +971,7 @@ LTTNG_TP_EXTERN_C const int *_loglevel___##__provider##___##__name	   \
 
 #undef TRACEPOINT_MODEL_EMF_URI
 #define TRACEPOINT_MODEL_EMF_URI(__provider, __name, __uri)		   \
-LTTNG_TP_EXTERN_C const char *_model_emf_uri___##__provider##___##__name   \
+LTTNG_TP_EXTERN_C const char *_TP_COMBINE_TOKENS4(_model_emf_uri___, __provider, ___, __name)   \
 		__attribute__((visibility("hidden"))) = __uri;		   \
 
 #include TRACEPOINT_INCLUDE
@@ -992,22 +992,22 @@ LTTNG_TP_EXTERN_C const char *_model_emf_uri___##__provider##___##__name   \
 #undef TRACEPOINT_EVENT_INSTANCE
 #define TRACEPOINT_EVENT_INSTANCE(_provider, _template, _name, _args)	       \
 static const int *							       \
-	__ref_loglevel___##_provider##___##_name			       \
-	__attribute__((weakref ("_loglevel___" #_provider "___" #_name)));     \
+	_TP_COMBINE_TOKENS4(__ref_loglevel___, _provider, ___, _name)			       \
+	__attribute__((weakref (_STRINGIFY_TOKENS4(_loglevel___, _provider, ___, _name))));     \
 static const char *							       \
-	__ref_model_emf_uri___##_provider##___##_name			       \
-	__attribute__((weakref ("_model_emf_uri___" #_provider "___" #_name)));\
-static const struct lttng_event_desc __event_desc___##_provider##_##_name = {	       \
-	.name = #_provider ":" #_name,					       \
-	.probe_callback = (void (*)(void)) &__event_probe__##_provider##___##_template,\
+	_TP_COMBINE_TOKENS4(__ref_model_emf_uri___, _provider, ___, _name)			       \
+	__attribute__((weakref (_STRINGIFY_TOKENS4(_model_emf_uri___, _provider, ___, _name))));\
+static const struct lttng_event_desc _TP_COMBINE_TOKENS4(__event_desc___, _provider, _, _name) = {	       \
+	.name = _STRINGIFY_TOKENS3(_provider, :, _name),					       \
+	.probe_callback = (void (*)(void)) &_TP_COMBINE_TOKENS4(__event_probe__, _provider, ___, _template),\
 	.ctx = NULL,							       \
-	.fields = __event_fields___##_provider##___##_template,		       \
-	.nr_fields = _TP_ARRAY_SIZE(__event_fields___##_provider##___##_template) - 1, \
-	.loglevel = &__ref_loglevel___##_provider##___##_name,		       \
-	.signature = __tp_event_signature___##_provider##___##_template,       \
+	.fields = _TP_COMBINE_TOKENS4(__event_fields___, _provider, ___, _template),		       \
+	.nr_fields = _TP_ARRAY_SIZE(_TP_COMBINE_TOKENS4(__event_fields___, _provider, ___, _template)) - 1, \
+	.loglevel = &_TP_COMBINE_TOKENS4(__ref_loglevel___, _provider, ___, _name),		       \
+	.signature = _TP_COMBINE_TOKENS4(__tp_event_signature___, _provider, ___, _template),       \
 	.u = {								       \
 	    .ext = {							       \
-		  .model_emf_uri = &__ref_model_emf_uri___##_provider##___##_name, \
+		  .model_emf_uri = &_TP_COMBINE_TOKENS4(__ref_model_emf_uri___, _provider, ___, _name), \
 		},							       \
 	},								       \
 };
@@ -1025,7 +1025,7 @@ static const struct lttng_event_desc __event_desc___##_provider##_##_name = {	  
 
 #undef TRACEPOINT_EVENT_INSTANCE
 #define TRACEPOINT_EVENT_INSTANCE(_provider, _template, _name, _args)	       \
-	&__event_desc___##_provider##_##_name,
+	&_TP_COMBINE_TOKENS4(__event_desc___, _provider, _, _name),
 
 static const struct lttng_event_desc *_TP_COMBINE_TOKENS(__event_desc___, TRACEPOINT_PROVIDER)[] = {
 #include TRACEPOINT_INCLUDE
